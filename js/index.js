@@ -5,5 +5,6 @@ window.onload = function(){
     var ctx = canvas.getContext('webgl');
 
     var scene = THREE.Scene();
-    var camera = THREE.Camera();
+    var camera = THREE.PerspectiveCamera();
+    var renderer = THREE.Renderer();
 };
