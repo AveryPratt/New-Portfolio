@@ -5,7 +5,7 @@ window.onload = function(){
     var canvas = document.getElementById('background-canvas');
 
     var renderer = new THREE.WebGLRenderer({canvas: canvas, antialias: true});
-    renderer.setClearColor(0xbbddff);
+    renderer.setClearColor(0xffffff);
     renderer.setPixelRatio(window.devicePixelRatio);
     renderer.setSize(window.innerWidth, window.innerHeight);
     
@@ -14,11 +14,6 @@ window.onload = function(){
     camera.position.y = 8;
     camera.position.z = 60;
     camera.rotateX(-5 / deg);
-    
-    var light = new THREE.AmbientLight(0xffffff, .25);
-    var dirLight = new THREE.DirectionalLight(0xffffff, 0.5);
-    dirLight.position.y = 100;
-    dirLight.position.z = 0;
     
     // Geometries
     var waterPlane = new THREE.PlaneGeometry(500, 250, 250, 125);
@@ -36,16 +31,20 @@ window.onload = function(){
             sandPlane.vertices[idx].z += -.0075 * Math.pow(j, 2) + .5 * j - 11;
         }
     }
-    var basePlane = new THREE.PlaneGeometry(500, 500, 1, 1);
+    var basePlane = new THREE.PlaneGeometry(700, 500, 1, 1);
     basePlane.translate(0, 0, -20);
     
     // Materials
     var waterPlaneMaterial = new THREE.ShaderMaterial({
-        vertexShader: document.getElementById('vertexShader').textContent,
-        fragmentShader: document.getElementById('fragmentShader').textContent,
+        vertexShader: document.getElementById('waterVertex').textContent,
+        fragmentShader: document.getElementById('waterFragment').textContent,
         transparent: true
     });
-    var sandPlaneMaterial = new THREE.MeshLambertMaterial({ color: 0xffddbb });
+    var sandPlaneMaterial = new THREE.ShaderMaterial({
+        vertexShader: document.getElementById('sandVertex').textContent,
+        fragmentShader: document.getElementById('sandFragment').textContent
+    });
+    // var sandPlaneMaterial = new THREE.MeshLambertMaterial({ color: 0xffddbb });
     var basePlaneMaterial = new THREE.MeshLambertMaterial({ color: 0x004080 });
 
     // Meshes
@@ -58,8 +57,6 @@ window.onload = function(){
 
     // Scene
     var scene = new THREE.Scene();
-    scene.add(light);
-    scene.add(dirLight);
     scene.add(waterPlaneMesh);
     scene.add(sandPlaneMesh);
     scene.add(basePlaneMesh);
