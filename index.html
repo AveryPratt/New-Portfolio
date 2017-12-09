@@ -6,32 +6,49 @@
     </head>
     <body>
         <header>
-            <div id="logo">
-                Logo
-            </div>
             <nav id="top-nav">
             </nav>
         </header>
         <canvas id="background-canvas"></canvas>
     </body>
     <script src="http://threejs.org/build/three.min.js"></script>
-    <script type="x-shader/x-vertex" id="vertexShader">
-        varying vec3 vUv;
+    <script type="x-shader/x-vertex" id="waterVertex">
+        varying vec3 waterPos;
         void main()
         {
-            vUv = position;
+            waterPos = position;
             vec4 modelViewPosition = modelViewMatrix * vec4(position, 1.0);
             gl_Position = projectionMatrix * modelViewPosition;
         }
     </script>
-    <script type="x-shader/x-vertex" id="fragmentShader">
-        varying vec3 vUv;
+    <script type="x-shader/x-vertex" id="waterFragment">
+        varying vec3 waterPos;
 
         void main()
         {
-            float r = .375 * (2.0 + vUv.z);
-            float g = .625 + .125 * (2.0 + vUv.z);
-            float b = .75 + .125 * (2.0 + vUv.z);
+            float r = .25 * (2.75 + waterPos.z) * (2.75 + waterPos.z) * (2.75 + waterPos.z);
+            float g = .625 + .125 * (2.75 + waterPos.z) * (2.75 + waterPos.z) * (2.75 + waterPos.z);
+            float b = .75 + .125 * (2.75 + waterPos.z) * (2.75 + waterPos.z) * (2.75 + waterPos.z);
+            gl_FragColor = vec4(r, g, b, 0.75);
+        }
+    </script>
+    <script type="x-shader/x-vertex" id="sandVertex">
+        varying vec3 sandPos;
+        void main()
+        {
+            sandPos = position;
+            vec4 modelViewPosition = modelViewMatrix * vec4(position, 1.0);
+            gl_Position = projectionMatrix * modelViewPosition;
+        }
+    </script>
+    <script type="x-shader/x-fragment" id="sandFragment">
+        varying vec3 sandPos;
+
+        void main()
+        {
+            float r = sandPos.z * 0.065 + 0.9;
+            float g = sandPos.z * 0.065 + 0.65;
+            float b = sandPos.z * 0.065 + 0.4;
             gl_FragColor = vec4(r, g, b, 0.75);
         }
     </script>
