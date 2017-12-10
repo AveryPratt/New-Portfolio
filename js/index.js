@@ -21,6 +21,7 @@ function slide(e){
             break;
     }
 }
+var textureLoader = new THREE.TextureLoader();
 
 var renderer = new THREE.WebGLRenderer({
     canvas: canvas,

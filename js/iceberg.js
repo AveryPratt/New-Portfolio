@@ -42,10 +42,22 @@ var grip2 = new THREE.Vector3(
 );
 var arm1 = new THREE.Geometry();
 arm1.vertices.push(new THREE.Vector3(-1, 3.75, -1));
+arm1.vertices.push(new THREE.Vector3(-2.5, 4, -1));
 arm1.vertices.push(grip1);
 var arm2 = new THREE.Geometry();
 arm2.vertices.push(new THREE.Vector3(-1, 3.75, 2));
+arm2.vertices.push(new THREE.Vector3(-3, 4.5, 1));
 arm2.vertices.push(grip2);
+var branch1 = new THREE.Geometry();
+branch1.vertices.push(new THREE.Vector3(-3.6, 4.5, -.75));
+branch1.vertices.push(new THREE.Vector3(
+    arm1.vertices[1].x + (arm1.vertices[2].x - arm1.vertices[1].x) / 2,
+    arm1.vertices[1].y + (arm1.vertices[2].y - arm1.vertices[1].y) / 2,
+    arm1.vertices[1].z + (arm1.vertices[2].z - arm1.vertices[1].z) / 2,
+));
+var branch2 = new THREE.Geometry();
+branch2.vertices.push(new THREE.Vector3(-3, 4.5, 1));
+branch2.vertices.push(new THREE.Vector3(-3.5, 4.1, 1.25));
 
 // Materials
 var iceMaterial = new THREE.MeshLambertMaterial({
@@ -57,6 +69,9 @@ var fishingPoleMaterial = new THREE.LineBasicMaterial({
 var armMaterial = new THREE.LineBasicMaterial({
     color: 0x804000
 });
+var faceMaterial = new THREE.MeshLambertMaterial({
+    map: textureLoader.load('img/speech.jpg')
+})
 
 // Meshes
 var iceBergMesh = new THREE.Mesh(iceBerg, iceMaterial);
@@ -76,7 +91,7 @@ var snowBall2Mesh = new THREE.Mesh(snowBall2, iceMaterial);
 snowBall2Mesh.translateY(4);
 snowBall2Mesh.translateZ(.2);
 
-var snowBall3Mesh = new THREE.Mesh(snowBall3, iceMaterial);
+var snowBall3Mesh = new THREE.Mesh(snowBall3, faceMaterial);
 snowBall3Mesh.translateX(-.2);
 snowBall3Mesh.translateY(6.7);
 snowBall3Mesh.translateZ(.1);
@@ -85,6 +100,8 @@ var fishingPoleLine = new THREE.Line(fishingPole, fishingPoleMaterial);
 
 var arm1Line = new THREE.Line(arm1, armMaterial);
 var arm2Line = new THREE.Line(arm2, armMaterial);
+var branch1Line = new THREE.Line(branch1, armMaterial);
+var branch2Line = new THREE.Line(branch2, armMaterial);
 
 var snowMan = new THREE.Object3D();
 snowMan.add(snowBall1Mesh);
@@ -93,6 +110,8 @@ snowMan.add(snowBall3Mesh);
 snowMan.add(fishingPoleLine);
 snowMan.add(arm1Line);
 snowMan.add(arm2Line);
+snowMan.add(branch1Line);
+snowMan.add(branch2Line);
 snowMan.translateX(-10);
 
 var iceBergObj = new THREE.Object3D();
@@ -108,6 +127,6 @@ scene.add(smallBergMesh);
 
 // Loop
 function renderIceberg(){
-    iceBergObj.rotateY(.1 / deg);
+    iceBergObj.rotateY(1 / deg);
     smallBergMesh.rotateY(-.25 / deg);
 }
