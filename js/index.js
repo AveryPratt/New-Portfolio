@@ -22,7 +22,10 @@ function slide(e){
     }
 }
 
-var renderer = new THREE.WebGLRenderer({canvas: canvas, antialias: true});
+var renderer = new THREE.WebGLRenderer({
+    canvas: canvas,
+    antialias: true
+});
 renderer.setClearColor(0xffffff);
 renderer.setPixelRatio(window.devicePixelRatio);
 renderer.setSize(window.innerWidth, window.innerHeight);
@@ -36,10 +39,13 @@ camera.rotateX(-5 / deg);
 // camera.position.z = 300;
 // camera.rotateX(-30 / deg);
 
-// Lighting
+// Lights
+var directionalLight = new THREE.DirectionalLight(0xffffff, .15);
+directionalLight.translateY(100);
+directionalLight.translateX(-100);
+directionalLight.translateZ(-100);
 var ambientLight = new THREE.AmbientLight(0xffffff, .5);
-var hemisphereLight = new THREE.HemisphereLight(0xffffff, 0x0080ff, .5);
-hemisphereLight.translateY(100);
+var hemisphereLight = new THREE.HemisphereLight(0xffffff, 0x0080ff, .35);
 
 // Geometries
 var waterPlane = new THREE.PlaneGeometry(500, 250, 250, 125);
@@ -72,6 +78,7 @@ basePlaneMesh.translateY(-31);
 
 // Scene
 var scene = new THREE.Scene();
+scene.add(directionalLight);
 scene.add(ambientLight);
 scene.add(hemisphereLight);
 scene.add(waterPlaneMesh);
