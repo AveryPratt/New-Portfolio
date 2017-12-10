@@ -13,6 +13,10 @@ function slide(e){
             break;
         case 68: // d
             loc = 600;
+            break;
+        case 83: // s
+            loc = 1200;
+            break;
         default:
             break;
     }
@@ -33,6 +37,9 @@ camera.rotateX(-5 / deg);
 // camera.rotateX(-30 / deg);
 
 // Lighting
+var ambientLight = new THREE.AmbientLight(0xffffff, .5);
+var hemisphereLight = new THREE.HemisphereLight(0xffffff, 0x0080ff, .5);
+hemisphereLight.translateY(100);
 
 // Geometries
 var waterPlane = new THREE.PlaneGeometry(500, 250, 250, 125);
@@ -43,7 +50,7 @@ for (var i = 0; i <= 125; i++){
     }
 }
 var basePlane = new THREE.PlaneGeometry(600, 500, 1, 1);
-basePlane.translate(0, 0, -20);
+basePlane.rotateX(86.5);
 
 // Materials
 var waterPlaneMaterial = new THREE.ShaderMaterial({
@@ -59,12 +66,14 @@ var basePlaneMaterial = new THREE.MeshLambertMaterial({
 
 // Meshes
 var waterPlaneMesh = new THREE.Mesh(waterPlane, waterPlaneMaterial);
-var basePlaneMesh = new THREE.Mesh(basePlane, basePlaneMaterial);
 waterPlaneMesh.rotateX(-90 / deg);
-basePlaneMesh.rotateX(-86.5 / deg);
+var basePlaneMesh = new THREE.Mesh(basePlane, basePlaneMaterial);
+basePlaneMesh.translateY(-31);
 
 // Scene
 var scene = new THREE.Scene();
+scene.add(ambientLight);
+scene.add(hemisphereLight);
 scene.add(waterPlaneMesh);
 scene.add(basePlaneMesh);
 
@@ -97,6 +106,9 @@ window.onload = function(){
         waterPlane.verticesNeedUpdate = true;
         
         renderer.render(scene, camera);
+
+        renderIsland();
+        renderIceberg();
 
         delta += .01;
     }

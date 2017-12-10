@@ -10,7 +10,7 @@ for (var i = 0; i <= 100; i++){
         sandPlane.vertices[idx].z += -.015 * Math.pow(j, 2) + 1.5 * j - 73;
     }
 }
-sandPlane.translate(580, 0, 0);
+sandPlane.rotateX(-90 / deg);
 
 // Materials
 
@@ -22,7 +22,12 @@ var sandPlaneMaterial = new THREE.ShaderMaterial({
 
 // Meshes
 var sandPlaneMesh = new THREE.Mesh(sandPlane, sandPlaneMaterial);
-sandPlaneMesh.rotateX(-90 / deg);
+sandPlaneMesh.translateX(580);
 
 // Scene
 scene.add(sandPlaneMesh);
+
+// Loop
+function renderIsland(){
+
+}
