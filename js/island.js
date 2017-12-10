@@ -1,7 +1,8 @@
 'use strict';
 
-// Geometries
+var islandLoc = -600;
 
+// Geometries
 var sandPlane = new THREE.PlaneGeometry(200, 200, 100, 100);
 for (var i = 0; i <= 100; i++){
     for (var j = 0; j <= 100; j++){
@@ -13,7 +14,6 @@ for (var i = 0; i <= 100; i++){
 sandPlane.rotateX(-90 / deg);
 
 // Materials
-
 var sandPlaneMaterial = new THREE.ShaderMaterial({
     vertexShader: document.getElementById('sandVertex').textContent,
     fragmentShader: document.getElementById('sandFragment').textContent,
@@ -22,7 +22,7 @@ var sandPlaneMaterial = new THREE.ShaderMaterial({
 
 // Meshes
 var sandPlaneMesh = new THREE.Mesh(sandPlane, sandPlaneMaterial);
-sandPlaneMesh.translateX(580);
+sandPlaneMesh.translateX(islandLoc - 20);
 
 // Scene
 scene.add(sandPlaneMesh);
