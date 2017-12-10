@@ -22,29 +22,92 @@ for (var i = 0; i < 4; i++){
     }
 }
 
+var snowBall1 = new THREE.SphereBufferGeometry(2.5, 12, 12);
+var snowBall2 = new THREE.SphereBufferGeometry(2, 12, 12);
+var snowBall3 = new THREE.SphereBufferGeometry(1.5, 12, 12);
+
+var fishingPole = new THREE.Geometry();
+fishingPole.vertices.push(new THREE.Vector3(-1.5, 3.5, -.25));
+fishingPole.vertices.push(new THREE.Vector3(-12, 12, 0));
+
+var grip1 = new THREE.Vector3(
+    fishingPole.vertices[0].x + (fishingPole.vertices[1].x - fishingPole.vertices[0].x) / 4,
+    fishingPole.vertices[0].y + (fishingPole.vertices[1].y - fishingPole.vertices[0].y) / 4,
+    fishingPole.vertices[0].z + (fishingPole.vertices[1].z - fishingPole.vertices[0].z) / 4,
+);
+var grip2 = new THREE.Vector3(
+    fishingPole.vertices[0].x + (fishingPole.vertices[1].x - fishingPole.vertices[0].x) / 6,
+    fishingPole.vertices[0].y + (fishingPole.vertices[1].y - fishingPole.vertices[0].y) / 6,
+    fishingPole.vertices[0].z + (fishingPole.vertices[1].z - fishingPole.vertices[0].z) / 6,
+);
+var arm1 = new THREE.Geometry();
+arm1.vertices.push(new THREE.Vector3(-1, 3.75, -1));
+arm1.vertices.push(grip1);
+var arm2 = new THREE.Geometry();
+arm2.vertices.push(new THREE.Vector3(-1, 3.75, 2));
+arm2.vertices.push(grip2);
+
 // Materials
-var iceBergMaterial = new THREE.MeshLambertMaterial({
-    color: 0xffffff,
-    // wireframe: true
-})
+var iceMaterial = new THREE.MeshLambertMaterial({
+    color: 0xffffff
+});
+var fishingPoleMaterial = new THREE.LineBasicMaterial({
+    color: 0x303030
+});
+var armMaterial = new THREE.LineBasicMaterial({
+    color: 0x804000
+});
 
 // Meshes
-var iceBergMesh = new THREE.Mesh(iceBerg, iceBergMaterial);
+var iceBergMesh = new THREE.Mesh(iceBerg, iceMaterial);
 iceBergMesh.verticesNeedupdate = true;
-iceBergMesh.translateX(1220);
+iceBergMesh.translateX(10);
 iceBergMesh.translateY(-12);
-iceBergMesh.rotateY(-45 / deg);
-var smallBergMesh = new THREE.Mesh(smallBerg, iceBergMaterial);
-smallBergMesh.translateX(1140);
+
+var smallBergMesh = new THREE.Mesh(smallBerg, iceMaterial);
+smallBergMesh.translateX(1150);
 smallBergMesh.translateY(-4);
-smallBergMesh.translateZ(-40);
+smallBergMesh.translateZ(-60);
+
+var snowBall1Mesh = new THREE.Mesh(snowBall1, iceMaterial);
+snowBall1Mesh.translateY(.5);
+
+var snowBall2Mesh = new THREE.Mesh(snowBall2, iceMaterial);
+snowBall2Mesh.translateY(4);
+snowBall2Mesh.translateZ(.2);
+
+var snowBall3Mesh = new THREE.Mesh(snowBall3, iceMaterial);
+snowBall3Mesh.translateX(-.2);
+snowBall3Mesh.translateY(6.7);
+snowBall3Mesh.translateZ(.1);
+
+var fishingPoleLine = new THREE.Line(fishingPole, fishingPoleMaterial);
+
+var arm1Line = new THREE.Line(arm1, armMaterial);
+var arm2Line = new THREE.Line(arm2, armMaterial);
+
+var snowMan = new THREE.Object3D();
+snowMan.add(snowBall1Mesh);
+snowMan.add(snowBall2Mesh);
+snowMan.add(snowBall3Mesh);
+snowMan.add(fishingPoleLine);
+snowMan.add(arm1Line);
+snowMan.add(arm2Line);
+snowMan.translateX(-10);
+
+var iceBergObj = new THREE.Object3D();
+iceBergObj.add(iceBergMesh);
+iceBergObj.add(snowMan);
+iceBergObj.translateX(1220);
+iceBergObj.translateZ(-20);
+iceBergObj.rotateY(-45 / deg);
 
 // Scene
-scene.add(iceBergMesh);
+scene.add(iceBergObj);
 scene.add(smallBergMesh);
 
 // Loop
 function renderIceberg(){
-    iceBergMesh.rotateY(.04 / deg);
-    smallBergMesh.rotateY(-.1 / deg);
+    iceBergObj.rotateY(.1 / deg);
+    smallBergMesh.rotateY(-.25 / deg);
 }
