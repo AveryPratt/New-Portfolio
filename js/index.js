@@ -108,11 +108,11 @@ window.onload = function(){
         delta += deltaTime / 1500;
         
         var dist = 0;
-        if (camera.position.x < loc){
-            var dist = .001 + (loc - camera.position.x) / 40;
+        if (camera.position.x < loc - .001){
+            var dist = .001 + (loc - camera.position.x) * deltaTime / 1000;
         }
-        else if (camera.position.x > loc){
-            var dist = .001 + (loc - camera.position.x) / 40;
+        else if (camera.position.x > loc + .001){
+            var dist = .001 + (loc - camera.position.x) * deltaTime / 1000;
         }
         sunPos.x += dist;
         camera.translateX(dist);
