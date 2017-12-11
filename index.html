@@ -29,27 +29,30 @@
 
         float getAtmo(float y)
         {
-            float min = 0.0;
+            float min = 0.1;
             float max = 0.5;
-            return min + pow((200.0 - y) / (200.0 / pow(max - min, 0.5)), 2.0);
+            return min + pow((500.0 - y) / (500.0 / pow(max - min, 0.5)), 2.0);
         }
 
         void main()
         {
-            float sunY = sunPos.y + 0.0;
+            float sunY = sunPos.y + 500.0;
             float sunX = sunPos.x - 150.0;
             float sunDist = sqrt(pow((skyPos.x - sunX), 2.0) + pow(skyPos.y - sunY, 2.0));
             float sunAtm = getAtmo(sunY);
             float atm = getAtmo(skyPos.y);
 
-            float r = 1.0 - sunAtm * 0.5;
-            float g = 1.0 - sunAtm;
-            float b = 1.0 - sunAtm * 1.5;
+            float r = 1.0 - pow(sunAtm, 4.0);
+            float g = 1.0 - pow(sunAtm, 3.0);
+            float b = 1.0 - pow(sunAtm, 2.0);
 
-            r -= pow(sunDist / 10000.0, 1.0 / 3.0);
-            g -= pow(sunDist / 10000.0, 1.0 / 2.0);
-            b -= pow(sunDist / 10000.0, 1.0 / 1.0);
-
+            if (sunDist > 5.0)
+            {
+                r -= pow(sunDist / 5000.0, 1.0 / 4.0);
+                g -= pow(sunDist / 5000.0, 1.0 / 3.0);
+                b -= pow(sunDist / 5000.0, 1.0 / 2.0);
+            }
+            
             r *= 1.0 + atm;
             b *= 1.0 + atm;
             g *= 1.0 + atm;
