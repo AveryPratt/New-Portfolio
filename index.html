@@ -29,14 +29,14 @@
 
         float getAtmo(float y)
         {
-            float min = 0.1;
+            float min = 0.0;
             float max = 0.5;
-            return min + pow((300.0 - y) / (300.0 / pow(max - min, 0.5)), 2.0);
+            return min + pow((200.0 - y) / (200.0 / pow(max - min, 0.5)), 2.0);
         }
 
         void main()
         {
-            float sunY = sunPos.y + 100.0;
+            float sunY = sunPos.y + 0.0;
             float sunX = sunPos.x - 150.0;
             float sunDist = sqrt(pow((skyPos.x - sunX), 2.0) + pow(skyPos.y - sunY, 2.0));
             float sunAtm = getAtmo(sunY);
@@ -54,9 +54,10 @@
             b *= 1.0 + atm;
             g *= 1.0 + atm;
 
-            //r += (1.0 - r) * atm;
-            //g += (1.0 - g) * atm;
-            //b += (1.0 - b) * atm;
+            // adds mist
+            r += (1.0 - r) * atm;
+            g += (1.0 - g) * atm;
+            b += (1.0 - b) * atm;
 
             gl_FragColor = vec4(r, g, b, 1.0);
         }
