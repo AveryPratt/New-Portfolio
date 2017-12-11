@@ -35,12 +35,12 @@ renderer.setSize(window.innerWidth, window.innerHeight);
 
 // Camera
 var camera = new THREE.PerspectiveCamera(35, window.innerWidth / window.innerHeight, .1, 3000);
-camera.position.y = 8;
-camera.position.z = 60;
-camera.rotateX(-5 / deg);
-// camera.position.y = 150;
-// camera.position.z = 300;
-// camera.rotateX(-20 / deg);
+// camera.position.y = 8;
+// camera.position.z = 60;
+// camera.rotateX(-5 / deg);
+camera.position.y = 150;
+camera.position.z = 300;
+camera.rotateX(-10 / deg);
 
 // Lights
 var directionalLight = new THREE.DirectionalLight(0xffffff, .15);
@@ -51,7 +51,7 @@ var ambientLight = new THREE.AmbientLight(0xffffff, .5);
 var hemisphereLight = new THREE.HemisphereLight(0xffffff, 0x0080ff, .35);
 
 // Geometries
-var skyPlane = new THREE.PlaneGeometry(600, 250, 1, 1);
+var skyPlane = new THREE.PlaneGeometry(600, 250, 10, 10);
 var waterPlane = new THREE.PlaneGeometry(500, 250, 250, 125);
 for (var i = 0; i <= 125; i++){
     for (var j = 0; j <= 250; j++){
@@ -63,23 +63,27 @@ var basePlane = new THREE.PlaneGeometry(600, 500, 1, 1);
 basePlane.rotateX(86.5);
 
 // Materials
-var skyPlaneMaterial = new THREE.MeshBasicMaterial({
-    color: 0xb080ff
-})
+var skyPlaneMaterial = new THREE.ShaderMaterial({
+    vertexShader: document.getElementById('skyVertex').textContent,
+    fragmentShader: document.getElementById('skyFragment').textContent
+});
+// var skyPlaneMaterial = new THREE.MeshBasicMaterial({
+//     color: 0x8000ff
+// });
 var waterPlaneMaterial = new THREE.ShaderMaterial({
     vertexShader: document.getElementById('waterVertex').textContent,
     fragmentShader: document.getElementById('waterFragment').textContent,
-    transparent: true,
-    // wireframe: true
+    transparent: true
 });
 var basePlaneMaterial = new THREE.MeshLambertMaterial({
-    color: 0x004080,
-    // wireframe: true
+    color: 0x004080
 });
 
 // Meshes
 var skyPlaneMesh = new THREE.Mesh(skyPlane, skyPlaneMaterial);
 skyPlaneMesh.translateZ(-250);
+var sunPos = new THREE.Vector3(100, 50, skyPlaneMesh.z);
+
 var waterPlaneMesh = new THREE.Mesh(waterPlane, waterPlaneMaterial);
 waterPlaneMesh.rotateX(-90 / deg);
 var basePlaneMesh = new THREE.Mesh(basePlane, basePlaneMaterial);
@@ -110,6 +114,7 @@ window.onload = function(){
         else if (camera.position.x > loc){
             var dist = .001 + (loc - camera.position.x) / 40;
         }
+        sunPos.x += dist;
         camera.translateX(dist);
         skyPlane.translate(dist, 0, 0);
         waterPlane.translate(dist, 0, 0);

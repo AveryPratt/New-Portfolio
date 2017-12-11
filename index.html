@@ -12,8 +12,40 @@
         <canvas id="background-canvas"></canvas>
     </body>
     <script src="http://threejs.org/build/three.min.js"></script>
+    <script type="x-shader/x-vertex" id="skyVertex">
+        uniform vec3 sunPos;
+        varying vec3 skyPos;
+
+        void main()
+        {
+            skyPos = position;
+            vec4 modelViewPosition = modelViewMatrix * vec4(position, 1.0);
+            gl_Position = projectionMatrix * modelViewPosition;
+        }
+    </script>
+    <script type="x-shader/x-fragment" id="skyFragment">
+        uniform vec3 sunPos;
+        varying vec3 skyPos;
+
+        void main()
+        {
+            float sunY = sunPos.y + 200.0;
+            float sunX = sunPos.x - 150.0;
+            float sunDist = sqrt(pow((skyPos.x - sunX), 2.0) + pow(skyPos.y - sunY, 2.0));
+
+            float r = 1.0 - pow(sunDist / 1000.0, 1.0 / 4.0);
+            float g = 1.0 - pow(sunDist / 1000.0, 1.0 / 3.0);
+            float b = 1.0 - pow(sunDist / 1000.0, 1.0 / 2.0);
+
+            r += (1.0 - r) * (200.0 - (skyPos.y + 10.0)) / 600.0;
+            g += (1.0 - g) * (200.0 - (skyPos.y + 10.0)) / 600.0;
+            b += (1.0 - b) * (200.0 - (skyPos.y + 10.0)) / 600.0;
+            gl_FragColor = vec4(r, g, b, 1.0);
+        }
+    </script>
     <script type="x-shader/x-vertex" id="waterVertex">
         varying vec3 waterPos;
+
         void main()
         {
             waterPos = position;
@@ -21,19 +53,21 @@
             gl_Position = projectionMatrix * modelViewPosition;
         }
     </script>
-    <script type="x-shader/x-vertex" id="waterFragment">
+    <script type="x-shader/x-fragment" id="waterFragment">
         varying vec3 waterPos;
 
         void main()
         {
-            float r = .25 * (2.75 + waterPos.z) * (2.75 + waterPos.z) * (2.75 + waterPos.z);
-            float g = .625 + .125 * (2.75 + waterPos.z) * (2.75 + waterPos.z) * (2.75 + waterPos.z);
-            float b = .75 + .125 * (2.75 + waterPos.z) * (2.75 + waterPos.z) * (2.75 + waterPos.z);
+            float cubedHeight = (2.75 + waterPos.z) * (2.75 + waterPos.z) * (2.75 + waterPos.z);
+            float r = 0.25 * cubedHeight;
+            float g = 0.625 + 0.125 * cubedHeight;
+            float b = 0.75 + 0.125 * cubedHeight;
             gl_FragColor = vec4(r, g, b, 0.75);
         }
     </script>
     <script type="x-shader/x-vertex" id="sandVertex">
         varying vec3 sandPos;
+
         void main()
         {
             sandPos = position;
