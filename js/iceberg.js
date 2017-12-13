@@ -1,6 +1,6 @@
 'use strict';
 
-var iceBergLoc = 600;
+var iceBergLoc = 1500;
 
 // Geometries
 var iceBerg = new THREE.CylinderGeometry(24, 16, 24, 24, 6);
