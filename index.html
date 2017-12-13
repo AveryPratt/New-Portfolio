@@ -13,7 +13,6 @@
     </body>
     <script src="http://threejs.org/build/three.min.js"></script>
     <script type="x-shader/x-vertex" id="skyVertex">
-        uniform vec3 sunPos;
         varying vec3 skyPos;
 
         void main()
@@ -27,40 +26,39 @@
         uniform vec3 sunPos;
         varying vec3 skyPos;
 
-        float getAtmo(float y)
-        {
-            float min = 0.1;
-            float max = 0.5;
-            return min + pow((500.0 - y) / (500.0 / pow(max - min, 0.5)), 2.0);
-        }
-
         void main()
         {
-            float sunY = sunPos.y + 500.0;
-            float sunX = sunPos.x - 150.0;
-            float sunDist = sqrt(pow((skyPos.x - sunX), 2.0) + pow(skyPos.y - sunY, 2.0));
-            float sunAtm = getAtmo(sunY);
-            float atm = getAtmo(skyPos.y);
+            // phase function
+            // 3 * (1 - g^2)/(2 * (2 + g^2)) * (1 + cos(x)^2)/(1 + g^2 - 2 * g * cos(x))
+            // 3/4 * (1 + cos(x)^2)
 
-            float r = 1.0 - pow(sunAtm, 4.0);
-            float g = 1.0 - pow(sunAtm, 3.0);
-            float b = 1.0 - pow(sunAtm, 2.0);
+            // atm density
+            // -exp(-4 * skyPos.y - .4) + 1
 
-            if (sunDist > 5.0)
-            {
-                r -= pow(sunDist / 5000.0, 1.0 / 4.0);
-                g -= pow(sunDist / 5000.0, 1.0 / 3.0);
-                b -= pow(sunDist / 5000.0, 1.0 / 2.0);
-            }
-            
-            r *= 1.0 + atm;
-            b *= 1.0 + atm;
-            g *= 1.0 + atm;
+            // particle radius
+            // rayleigh: .3nm
+            // mie: 5,000-50,000nm
 
-            // adds mist
-            r += (1.0 - r) * atm;
-            g += (1.0 - g) * atm;
-            b += (1.0 - b) * atm;
+            // wavelengths
+            // r: 700nm
+            // g: 530nm
+            // b: 465nm
+
+            // .3nm particles (rayleigh)
+            // r: 0.0026927937
+            // g: 0.00355651998
+            // b: 0.00405366794
+
+            float pi = 3.1415926;
+            float sunAngle = sqrt(pow((skyPos.x - sunPos.x), 2.0) + pow(skyPos.y - sunPos.y, 2.0)) / 500.0;
+            float theta = skyPos.y * pi / 1000.0;
+            float atm = exp(-4.0 * theta - .4);
+            float dens = 0.95;
+            float mieValue = atm * 3.0 * (1.0 - pow(dens, 2.0))/(2.0 * (2.0 + pow(dens, 2.0))) * (1.0 + pow(cos(sunAngle), 2.0))/(1.0 + pow(dens, 2.0) - 2.0 * dens * cos(sunAngle));
+            float rayleighValue = 3.0/4.0 * (1.0 + pow(cos(sunAngle), 2.0));
+            float r = mieValue + rayleighValue * atm;
+            float g = mieValue + rayleighValue * atm;
+            float b = mieValue + rayleighValue * atm;
 
             gl_FragColor = vec4(r, g, b, 1.0);
         }
@@ -77,13 +75,65 @@
     </script>
     <script type="x-shader/x-fragment" id="waterFragment">
         varying vec3 waterPos;
+        uniform vec3 sunPos;
+        
+        float getAtmo(float y)
+        {
+            float min = 0.1;
+            float max = 0.5;
+            return min + pow((500.0 - y) / (500.0 / pow(max - min, 0.5)), 2.0);
+        }
 
         void main()
         {
-            float cubedHeight = (2.75 + waterPos.z) * (2.75 + waterPos.z) * (2.75 + waterPos.z);
-            float r = 0.25 * cubedHeight;
-            float g = 0.625 + 0.125 * cubedHeight;
-            float b = 0.75 + 0.125 * cubedHeight;
+            float sunAtm = getAtmo(sunPos.y);
+
+            float sr = 1.0 - pow(sunAtm, 3.0);
+            float sg = 1.0 - pow(sunAtm, 2.0);
+            float sb = 1.0 - pow(sunAtm, 1.0);
+            if (sr < 0.0) {sr = 0.0;}
+            if (sg < 0.0) {sg = 0.0;}
+            if (sb < 0.0) {sb = 0.0;}
+
+            float heightCubed = pow(2.75 + waterPos.z, 3.0);
+            float r = 0.05 * heightCubed + (0.25 * heightCubed) * sr;
+            float g = 0.075 * heightCubed + (0.625 + 0.125 * heightCubed) * sg;
+            float b = 0.1 * heightCubed + (0.75 + 0.125 * heightCubed) * sb;
+            gl_FragColor = vec4(r, g, b, 0.75);
+        }
+    </script>
+    <script type="x-shader/x-vertex" id="baseVertex">
+        varying vec3 basePos;
+
+        void main()
+        {
+            basePos = position;
+            vec4 modelViewPosition = modelViewMatrix * vec4(position, 1.0);
+            gl_Position = projectionMatrix * modelViewPosition;
+        }
+    </script>
+    <script type="x-shader/x-fragment" id="baseFragment">
+        varying vec3 basePos;
+        uniform vec3 sunPos;
+        
+        float getAtmo(float y)
+        {
+            float min = 0.1;
+            float max = 0.5;
+            return min + pow((500.0 - y) / (500.0 / pow(max - min, 0.5)), 2.0);
+        }
+
+        void main()
+        {
+            float sunAtm = getAtmo(sunPos.y);
+
+            float r = 1.0 - pow(sunAtm, 3.0);
+            float g = 1.0 - pow(sunAtm, 2.0);
+            float b = 1.0 - pow(sunAtm, 1.0);
+
+            //float r = basePos.y * 0.065 + 0.9;
+            //float g = basePos.y * 0.065 + 0.65;
+            //float b = basePos.y * 0.065 + 0.4;
             gl_FragColor = vec4(r, g, b, 0.75);
         }
     </script>

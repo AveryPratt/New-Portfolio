@@ -1,6 +1,6 @@
 'use strict';
 
-var islandLoc = -600;
+var islandLoc = 0;
 
 // Geometries
 var sandPlane = new THREE.PlaneGeometry(200, 200, 100, 100);
